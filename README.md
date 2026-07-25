@@ -160,9 +160,6 @@ http://127.0.0.1:8000/redoc
 FastAPI automatically generates interactive API documentation.
 ![AnimeDex API Swagger UI](screenshot/swagger_ui.png)
 
-```
-docs/images/swagger-ui.png
-```
 
 ---
 
