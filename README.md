@@ -72,7 +72,7 @@ GET /anime?genre=Action
 ### Filter by Status
 
 ```
-GET /anime?status=Completed
+GET /anime?anime_status=Completed
 ```
 
 ### Filter by Studio
@@ -84,7 +84,7 @@ GET /anime?studio=MAPPA
 You can also combine filters:
 
 ```
-GET /anime?genre=Action&status=Completed
+GET /anime?genre=Action&anime_status=Completed
 ```
 
 ---
