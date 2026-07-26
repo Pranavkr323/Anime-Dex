@@ -1,13 +1,14 @@
 # 🎌 AnimeDex API
 
-A beginner-friendly REST API built with **FastAPI** to explore anime data through clean and simple endpoints.
+A beginner-friendly **REST API** built with **FastAPI** to explore and manage anime data.
 
-This project was created while learning FastAPI fundamentals and demonstrates API routing, path parameters, query parameters, filtering, sorting, and HTTP exception handling.
+AnimeDex API demonstrates RESTful API development using FastAPI, including CRUD operations, request validation with Pydantic, filtering, sorting, proper HTTP status codes, and exception handling.
 
 ---
 
 ## 🚀 Features
 
+### 📖 Read Operations
 - 📚 Get all anime
 - 🔍 Get anime by ID
 - 🎲 Get a random anime
@@ -18,7 +19,18 @@ This project was created while learning FastAPI fundamentals and demonstrates AP
 - 📂 List all available genres
 - 📋 List all available statuses
 - 🎬 List all available studios
-- ❌ Proper 404 error handling using `HTTPException`
+
+### ✏️ Write Operations
+- ➕ Create a new anime
+- ♻️ Update an existing anime
+- 🗑️ Delete an anime
+
+### ✅ Validation & Error Handling
+- Request validation using **Pydantic**
+- Enum validation for anime status
+- Automatic response validation
+- Proper HTTP status codes
+- 404 error handling using `HTTPException`
 
 ---
 
@@ -26,6 +38,7 @@ This project was created while learning FastAPI fundamentals and demonstrates AP
 
 - Python 3
 - FastAPI
+- Pydantic
 - Uvicorn
 
 ---
@@ -35,8 +48,9 @@ This project was created while learning FastAPI fundamentals and demonstrates AP
 ```
 AnimeDex-API/
 │
-├── main.py            # FastAPI application
-├── data.py            # Anime dataset
+├── main.py              # FastAPI application
+├── data.py              # In-memory anime dataset
+├── models.py            # Pydantic models
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -49,13 +63,16 @@ AnimeDex-API/
 | Method | Endpoint | Description |
 |---------|----------|-------------|
 | GET | `/` | Welcome message |
-| GET | `/anime` | Get all anime |
+| GET | `/anime` | Get all anime or filter anime |
 | GET | `/anime/{id}` | Get anime by ID |
 | GET | `/anime/random` | Get a random anime |
-| GET | `/anime/top10` | Get Top 10 highest-rated anime |
-| GET | `/anime/genres` | Get all available genres |
-| GET | `/anime/status` | Get all available statuses |
-| GET | `/anime/studio` | Get all available studios |
+| GET | `/anime/top10` | Get Top 10 anime |
+| GET | `/anime/genres` | List all genres |
+| GET | `/anime/status` | List all statuses |
+| GET | `/anime/studio` | List all studios |
+| POST | `/anime` | Create a new anime |
+| PUT | `/anime/{id}` | Update an existing anime |
+| DELETE | `/anime/{id}` | Delete an anime |
 
 ---
 
@@ -81,11 +98,31 @@ GET /anime?anime_status=Completed
 GET /anime?studio=MAPPA
 ```
 
-You can also combine filters:
+### Combine Multiple Filters
 
 ```
-GET /anime?genre=Action&anime_status=Completed
+GET /anime?genre=Action&anime_status=Completed&studio=Pierrot
 ```
+
+---
+
+## 📝 Request Body
+
+### Create Anime
+
+```json
+{
+  "title": "Monster",
+  "genre": "Thriller",
+  "episodes": 74,
+  "rating": 9.2,
+  "studio": "Madhouse",
+  "release_year": 2004,
+  "status": "Completed"
+}
+```
+
+The same request body is used for updating an anime.
 
 ---
 
@@ -94,13 +131,13 @@ GET /anime?genre=Action&anime_status=Completed
 ### Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/animedex-api.git
+git clone https://github.com/Pranavkr323/Anime-Dex.git
 ```
 
 ### Navigate to the project
 
 ```bash
-cd animedex-api
+cd Anime-Dex
 ```
 
 ### Create a virtual environment
@@ -129,7 +166,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Run the server
+### Run the development server
 
 ```bash
 uvicorn main:app --reload
@@ -137,17 +174,17 @@ uvicorn main:app --reload
 
 ---
 
-## 📖 API Documentation
+## 📖 Interactive API Documentation
 
-Once the server is running, visit:
+Once the server is running:
 
-Swagger UI
+### Swagger UI
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
-ReDoc
+### ReDoc
 
 ```
 http://127.0.0.1:8000/redoc
@@ -158,48 +195,41 @@ http://127.0.0.1:8000/redoc
 ## 📸 Preview
 
 FastAPI automatically generates interactive API documentation.
-![AnimeDex API Swagger UI](screenshot/swagger_ui.png)
 
+![Swagger UI](screenshot/swagger_ui.png)
 
 ---
 
 ## 🎯 Learning Outcomes
 
-This project helped me understand:
+Through this project, I learned:
 
-- FastAPI project structure
-- API routing
-- REST principles
+- FastAPI fundamentals
+- REST API design
+- CRUD operations
 - Path parameters
 - Query parameters
-- Filtering data
-- Sorting responses
+- Request validation with Pydantic
+- Response models
+- Enum validation
 - HTTP status codes
 - Exception handling
-- Returning JSON responses
+- JSON serialization
+- API documentation with Swagger UI
 
 ---
 
 ## 🚧 Future Improvements
 
-- [ ] Add Pydantic models
-- [ ] Implement POST endpoints
-- [ ] Implement PUT endpoints
-- [ ] Implement DELETE endpoints
-- [ ] Add request validation
-- [ ] Integrate SQLite
-- [ ] Use SQLAlchemy ORM
-- [ ] Add JWT Authentication
-- [ ] Add pagination
-- [ ] Deploy the API
-
----
-
-## 🤝 Contributing
-
-Contributions, suggestions, and feedback are always welcome.
-
-Feel free to fork this repository and open a pull request.
+- [ ] Replace in-memory storage with SQLite
+- [ ] Integrate SQLAlchemy ORM
+- [ ] Async database operations
+- [ ] API Routers
+- [ ] JWT Authentication
+- [ ] Pagination
+- [ ] Unit testing with Pytest
+- [ ] Docker support
+- [ ] Deploy to Render or Railway
 
 ---
 
@@ -213,6 +243,6 @@ This project is licensed under the MIT License.
 
 **Pranav Kumar**
 
-Backend Developer | Python Enthusiast | FastAPI Learner
+Backend Developer • Python Enthusiast • FastAPI Learner
 
 GitHub: https://github.com/Pranavkr323
