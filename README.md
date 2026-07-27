@@ -246,3 +246,6 @@ This project is licensed under the MIT License.
 Backend Developer • Python Enthusiast • FastAPI Learner
 
 GitHub: https://github.com/Pranavkr323
+Linkedin : https://www.linkedin.com/in/pranav-kumar-4365b2324/
+
+If you liked it, Consider giving a star!
