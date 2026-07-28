@@ -1,8 +1,10 @@
 # 🎌 AnimeDex API
 
-A beginner-friendly **REST API** built with **FastAPI** to explore and manage anime data.
+A beginner-friendly **REST API built with FastAPI** to explore and manage anime data.
 
-AnimeDex API demonstrates RESTful API development using FastAPI, including CRUD operations, request validation with Pydantic, filtering, sorting, proper HTTP status codes, and exception handling.
+AnimeDex API started as a simple FastAPI project with in-memory data and has evolved into a backend application using **SQLAlchemy ORM and SQLite database**.
+
+The project demonstrates REST API development with FastAPI, including CRUD operations, database integration, request validation, response models, dependency injection, exception handling, and proper backend architecture.
 
 ---
 
@@ -11,24 +13,23 @@ AnimeDex API demonstrates RESTful API development using FastAPI, including CRUD 
 ### 📖 Read Operations
 - 📚 Get all anime
 - 🔍 Get anime by ID
-- 🎲 Get a random anime
-- ⭐ Get Top 10 highest-rated anime
-- 🎭 Filter anime by genre
-- 📺 Filter anime by status
-- 🏢 Filter anime by studio
-- 📂 List all available genres
-- 📋 List all available statuses
-- 🎬 List all available studios
 
 ### ✏️ Write Operations
 - ➕ Create a new anime
 - ♻️ Update an existing anime
 - 🗑️ Delete an anime
 
+### 🗄️ Database Integration
+- Persistent data storage using SQLite
+- SQLAlchemy ORM for database operations
+- SQLAlchemy 2.0 style models using `Mapped` and `mapped_column`
+- Database session management using FastAPI dependency injection
+
 ### ✅ Validation & Error Handling
 - Request validation using **Pydantic**
+- Response validation using Pydantic models
 - Enum validation for anime status
-- Automatic response validation
+- Field validation using Pydantic `Field`
 - Proper HTTP status codes
 - 404 error handling using `HTTPException`
 
@@ -39,6 +40,8 @@ AnimeDex API demonstrates RESTful API development using FastAPI, including CRUD 
 - Python 3
 - FastAPI
 - Pydantic
+- SQLAlchemy
+- SQLite
 - Uvicorn
 
 ---
@@ -48,9 +51,14 @@ AnimeDex API demonstrates RESTful API development using FastAPI, including CRUD 
 ```
 AnimeDex-API/
 │
-├── main.py              # FastAPI application
-├── data.py              # In-memory anime dataset
-├── models.py            # Pydantic models
+├── app/
+│   ├── main.py          # FastAPI application and API routes
+│   ├── models.py        # SQLAlchemy database models
+│   ├── schemas.py       # Pydantic schemas
+│   ├── crud.py          # Database operations
+│   ├── database.py      # Database configuration and sessions
+│   └── __init__.py
+│
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -63,46 +71,11 @@ AnimeDex-API/
 | Method | Endpoint | Description |
 |---------|----------|-------------|
 | GET | `/` | Welcome message |
-| GET | `/anime` | Get all anime or filter anime |
+| GET | `/anime` | Get all anime |
 | GET | `/anime/{id}` | Get anime by ID |
-| GET | `/anime/random` | Get a random anime |
-| GET | `/anime/top10` | Get Top 10 anime |
-| GET | `/anime/genres` | List all genres |
-| GET | `/anime/status` | List all statuses |
-| GET | `/anime/studio` | List all studios |
 | POST | `/anime` | Create a new anime |
 | PUT | `/anime/{id}` | Update an existing anime |
 | DELETE | `/anime/{id}` | Delete an anime |
-
----
-
-## 🔎 Query Parameters
-
-The `/anime` endpoint supports filtering.
-
-### Filter by Genre
-
-```
-GET /anime?genre=Action
-```
-
-### Filter by Status
-
-```
-GET /anime?anime_status=Completed
-```
-
-### Filter by Studio
-
-```
-GET /anime?studio=MAPPA
-```
-
-### Combine Multiple Filters
-
-```
-GET /anime?genre=Action&anime_status=Completed&studio=Pierrot
-```
 
 ---
 
@@ -122,7 +95,7 @@ GET /anime?genre=Action&anime_status=Completed&studio=Pierrot
 }
 ```
 
-The same request body is used for updating an anime.
+The same schema is used for updating anime data.
 
 ---
 
@@ -169,14 +142,14 @@ pip install -r requirements.txt
 ### Run the development server
 
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 ---
 
 ## 📖 Interactive API Documentation
 
-Once the server is running:
+FastAPI automatically provides interactive documentation.
 
 ### Swagger UI
 
@@ -207,25 +180,27 @@ Through this project, I learned:
 - FastAPI fundamentals
 - REST API design
 - CRUD operations
-- Path parameters
-- Query parameters
-- Request validation with Pydantic
+- SQLAlchemy ORM integration
+- Database session management
+- Dependency injection using `Depends()`
+- Pydantic schemas and validation
 - Response models
 - Enum validation
 - HTTP status codes
 - Exception handling
-- JSON serialization
-- API documentation with Swagger UI
+- Separation of API, schema, and database layers
+- Swagger UI documentation
 
 ---
 
 ## 🚧 Future Improvements
 
-- [ ] Replace in-memory storage with SQLite
-- [ ] Integrate SQLAlchemy ORM
+- [ ] Move API routes into separate routers
+- [ ] PostgreSQL database integration
 - [ ] Async database operations
-- [ ] API Routers
 - [ ] JWT Authentication
+- [ ] User accounts
+- [ ] Anime watchlist/favorites
 - [ ] Pagination
 - [ ] Unit testing with Pytest
 - [ ] Docker support
@@ -245,7 +220,7 @@ This project is licensed under the MIT License.
 
 Backend Developer • Python Enthusiast • FastAPI Learner
 
-GitHub: https://github.com/Pranavkr323
-Linkedin : https://www.linkedin.com/in/pranav-kumar-4365b2324/
+GitHub: https://github.com/Pranavkr323  
+LinkedIn: https://www.linkedin.com/in/pranav-kumar-4365b2324/
 
-If you liked it, Consider giving a star!
+If you liked it, consider giving it a ⭐!
