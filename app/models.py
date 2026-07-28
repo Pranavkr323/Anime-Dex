@@ -1,5 +1,7 @@
 from database import Base
+from sqlalchemy import Enum
 from sqlalchemy.orm import Mapped, mapped_column
+from schemas import AnimeStatus
 
 class Anime(Base):
     __tablename__ = "animes"
@@ -11,4 +13,4 @@ class Anime(Base):
     rating: Mapped[float] = mapped_column(nullable=False)
     studio: Mapped[str] = mapped_column(nullable=False)
     release_year: Mapped[int] = mapped_column(nullable=False)
-    status: Mapped[str] = mapped_column(nullable=False)
+    status: Mapped[str] = mapped_column(Enum(AnimeStatus), nullable=False)

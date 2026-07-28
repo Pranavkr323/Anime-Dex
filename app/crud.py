@@ -14,6 +14,7 @@ def get_anime_by_id(db: Session, anime_id: int):
 
 # Create Anime
 def create_anime(db: Session, anime: schemas.AnimeCreate):
+    
     new_anime = models.Anime(**anime.model_dump())
     db.add(new_anime)
     db.commit()
