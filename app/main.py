@@ -1,10 +1,16 @@
-from fastapi import FastAPI, HTTPException, status
-from data import anime_list
+from fastapi import FastAPI, HTTPException, status, Depends
+from database import engine, Base, get_db
 from random import choice
-from models import Anime, AnimeCreate, AnimeStatus
+from models import Anime
 from typing import List
+from schemas import AnimeBase, AnimeCreate, AnimeGet, AnimeStatus, AnimeUpdate
+from sqlalchemy.orm import Session
+import crud 
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
+
 
 @app.get("/")
 def home():
@@ -12,39 +18,13 @@ def home():
             "message": "Welcome to AnimeDex API"
             }
 
-@app.get("/anime", response_model= List[Anime], summary="Get all anime or filter by genre, studio, and status")
+@app.get("/anime", response_model=List[AnimeGet], summary="Get all anime or filter by genre, studio, and status")
 
 def get_anime(
-    genre: str = None,
-    anime_status: AnimeStatus = None,
-    studio: str = None,
+    db: Session = Depends(get_db),
 ):
+    return crud.get_anime(db)
     
-    if genre is None and anime_status is None and studio is None:
-        return anime_list
-
-    res = []
-
-    for anime in anime_list:
-        if genre and anime["genre"] != genre:
-            continue
-
-        if anime_status and anime["status"] != anime_status.value:
-            continue
-
-        if studio and anime["studio"] != studio:
-            continue
-
-        res.append(anime)
-
-    if not res:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No anime found matching the given filter(s)."
-        )
-
-    return res
-
 @app.get("/anime/random",response_model= Anime)
 
 def get_anime():
