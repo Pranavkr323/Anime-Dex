@@ -1,7 +1,7 @@
-from database import Base
+from app.database import Base
 from sqlalchemy import Enum
 from sqlalchemy.orm import Mapped, mapped_column
-from schemas import AnimeStatus
+from app.schemas import AnimeStatus
 
 class Anime(Base):
     __tablename__ = "animes"

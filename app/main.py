@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, status, Depends
-from database import engine, Base, get_db
+from app.database import engine, Base, get_db
 from typing import List
-from schemas import AnimeCreate, AnimeGet, AnimeUpdate
+from app.schemas import AnimeCreate, AnimeGet, AnimeUpdate
 from sqlalchemy.orm import Session
-import crud 
+from app import crud 
 
 app = FastAPI()
 
