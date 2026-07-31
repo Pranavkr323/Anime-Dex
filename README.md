@@ -211,12 +211,7 @@ http://127.0.0.1:8000/redoc
 
 FastAPI automatically generates interactive API documentation.
 
-screenshot/swagger_ui.png
-
-```text
-screenshot/swagger_ui.png
-```
-
+![Swagger UI](screenshot/swagger_ui.png)
 ---
 
 ## 🎯 What I Learned
