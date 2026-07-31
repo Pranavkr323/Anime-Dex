@@ -211,7 +211,7 @@ http://127.0.0.1:8000/redoc
 
 FastAPI automatically generates interactive API documentation.
 
-> Add your Swagger UI screenshot here.
+screenshot/swagger_ui.png
 
 ```text
 screenshot/swagger_ui.png
