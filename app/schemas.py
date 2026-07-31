@@ -1,12 +1,8 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
-from enum import Enum
+from app.enums import AnimeStatus
 
 CURRENT_YEAR = datetime.now().year
-
-class AnimeStatus(Enum):
-    ONGOING = "Ongoing"
-    COMPLETED = "Completed"
 
 class AnimeBase(BaseModel):
     title: str = Field(..., min_length=2)
@@ -25,6 +21,5 @@ class AnimeUpdate(AnimeBase):
 
 class AnimeGet(AnimeBase):
     id: int
-    pass
 
     model_config = ConfigDict(from_attributes=True)
