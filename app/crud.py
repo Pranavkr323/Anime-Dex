@@ -2,8 +2,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from sqlalchemy import select, func
 from app.enums import AnimeStatus
-import random
-
+from app.utils import hash_password, verify_password
 
 # get all Animes
 def get_anime(
@@ -86,3 +85,19 @@ def delete_anime(db: Session, anime_id: int):
     db.delete(requested_anime)
     db.commit()
     return requested_anime
+
+def create_user(db: Session, user: schemas.UserRegister):
+    new_user = models.User(
+        username = user.username,
+        email = user.email,
+        hashed_password = hash_password(user.password),
+
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+def get_user_by_email(db: Session, email:str):
+    statement = select(models.User).where(models.User.email == email)
+    return db.execute(statement).scalar_one_or_none()

@@ -6,11 +6,18 @@ from app.enums import AnimeStatus
 class Anime(Base):
     __tablename__ = "animes"
 
-    id: Mapped[int] =  mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(nullable=False, unique = True)
-    genre: Mapped[str] = mapped_column(nullable=False)
-    episodes: Mapped[int] = mapped_column(nullable=False)
-    rating: Mapped[float] = mapped_column(nullable=False)
-    studio: Mapped[str] = mapped_column(nullable=False)
-    release_year: Mapped[int] = mapped_column(nullable=False)
+    id: Mapped[int] =  mapped_column(primary_key = True)
+    title: Mapped[str] = mapped_column(nullable = False, unique = True)
+    genre: Mapped[str] = mapped_column(nullable = False)
+    episodes: Mapped[int] = mapped_column(nullable = False)
+    rating: Mapped[float] = mapped_column(nullable = False)
+    studio: Mapped[str] = mapped_column(nullable = False)
+    release_year: Mapped[int] = mapped_column(nullable = False)
     status: Mapped[AnimeStatus] = mapped_column(Enum(AnimeStatus), nullable=False)
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[int] =  mapped_column(primary_key = True)
+    email: Mapped[str] = mapped_column(nullable = False, unique = True)
+    username: Mapped[str] = mapped_column(nullable = False, unique = True)
+    hashed_password: Mapped[str] = mapped_column(nullable = False)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.routers import anime
+from app.routers import anime, user
 
 
 app = FastAPI()
@@ -19,3 +19,4 @@ def home():
 
 
 app.include_router(anime.router)
+app.include_router(user.router)

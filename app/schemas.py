@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from datetime import datetime
 from app.enums import AnimeStatus
 
@@ -22,4 +22,21 @@ class AnimeUpdate(AnimeBase):
 class AnimeGet(AnimeBase):
     id: int
 
+    model_config = ConfigDict(from_attributes=True)
+
+class UserBase(BaseModel):
+    email: EmailStr
+
+
+class UserLogin(UserBase):
+    password: str = Field(..., min_length = 8)
+
+class UserRegister(UserBase):
+    username: str = Field(..., min_length = 2)
+    password: str = Field(..., min_length = 8)
+
+class UserResponse(UserBase):
+    id: int
+    username: str
+    
     model_config = ConfigDict(from_attributes=True)
