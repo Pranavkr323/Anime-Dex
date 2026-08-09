@@ -101,3 +101,12 @@ def create_user(db: Session, user: schemas.UserRegister):
 def get_user_by_email(db: Session, email:str):
     statement = select(models.User).where(models.User.email == email)
     return db.execute(statement).scalar_one_or_none()
+
+def verify_user(db: Session, user: schemas.UserLogin):
+    requested_user = get_user_by_email(db, user.email)
+    if requested_user is None:
+        return None
+    if verify_password(user.password, requested_user.hashed_password):
+        return requested_user
+    else:
+        return None

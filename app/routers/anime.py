@@ -4,7 +4,7 @@ from app.schemas import AnimeCreate, AnimeGet, AnimeUpdate
 from sqlalchemy.orm import Session
 from app import crud
 from app.enums import AnimeStatus
-from app.database import get_db
+from app.dependencies import get_db, get_current_user
 
 router = APIRouter(
     prefix= "/anime",
@@ -110,8 +110,10 @@ def anime_by_id(id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_201_CREATED,
     summary="Create a new anime",
     description="Adds a new anime to the database and returns the created resource.",
+    dependencies=[Depends(get_current_user)]
 )
-def create_anime(anime: AnimeCreate, db: Session = Depends(get_db)):
+def create_anime(anime: AnimeCreate,
+                 db: Session = Depends(get_db)):
     """Create a new anime."""
     return crud.create_anime(db, anime)
 
@@ -121,8 +123,10 @@ def create_anime(anime: AnimeCreate, db: Session = Depends(get_db)):
     response_model=AnimeGet,
     summary="Update an anime",
     description="Replaces all fields of an existing anime with the provided data.",
+    dependencies=[Depends(get_current_user)]
 )
-def update_anime(id: int, anime: AnimeUpdate, db: Session = Depends(get_db)):
+def update_anime(id: int, anime: AnimeUpdate,
+                 db: Session = Depends(get_db)):
     """Update an existing anime by replacing all of its fields."""
     to_update_anime = crud.update_anime(db, anime, id)
     if to_update_anime is None:
@@ -137,6 +141,7 @@ def update_anime(id: int, anime: AnimeUpdate, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     summary="Delete an anime",
     description="Deletes the anime with the specified ID from the database.",
+    dependencies=[Depends(get_current_user)]
 )
 def delete_anime(id: int, db: Session = Depends(get_db)):
     """Delete the selected anime by id."""
