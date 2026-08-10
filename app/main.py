@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.database import engine, Base
 from app.routers import anime, user
+from app.middleware import TimerMiddleware
 
 
 app = FastAPI()
@@ -17,6 +18,6 @@ Base.metadata.create_all(bind=engine)
 def home():
     return {"message": "Welcome to AnimeDex API"}
 
-
+app.add_middleware(TimerMiddleware)
 app.include_router(anime.router)
 app.include_router(user.router)
