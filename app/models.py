@@ -1,7 +1,8 @@
 from app.database import Base
-from sqlalchemy import Enum
+from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from app.enums import AnimeStatus
+from app.enums import AnimeStatus, APIKeyStatus
+from datetime import datetime
 
 class Anime(Base):
     __tablename__ = "animes"
@@ -21,3 +22,13 @@ class User(Base):
     email: Mapped[str] = mapped_column(nullable = False, unique = True)
     username: Mapped[str] = mapped_column(nullable = False, unique = True)
     hashed_password: Mapped[str] = mapped_column(nullable = False)
+
+class ApiKey(Base):
+    __tablename__ = "apikey"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    key_id: Mapped[str] = mapped_column(nullable=False, unique= True)
+    hashed_apikey: Mapped[str] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    name: Mapped[str] = mapped_column(nullable= False)
+    status: Mapped[APIKeyStatus] = mapped_column(Enum(APIKeyStatus), nullable= False)
+    created_at: Mapped[datetime] = mapped_column(nullable=False)

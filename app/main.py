@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.routers import anime, user
+from app.routers import anime, user, apikey_route
 from app.middleware import TimerMiddleware
 
 
@@ -21,3 +21,4 @@ def home():
 app.add_middleware(TimerMiddleware)
 app.include_router(anime.router)
 app.include_router(user.router)
+app.include_router(apikey_route.router)

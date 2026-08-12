@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
 from app.config import settings
 from joserfc.jwt import JWTClaimsRegistry
+import secrets, uuid
 
 JWT_ALGORITHM = settings.JWT_ALGORITHM
 SECRET_KEY = settings.SECRET_KEY
@@ -41,3 +42,14 @@ def verify_token(token: str):
         raise HTTPException(
             status_code = 401,
             detail = "Couldn't Validate Credentials")
+
+def create_api_key():
+    api_key = secrets.token_urlsafe(32)
+    key_id = str(uuid.uuid4())
+    hashed_api_key = hash_password(api_key)
+
+    return {
+        "api_key": api_key,
+        "key_id": key_id,
+        "hashed_api_key": hashed_api_key
+    }
