@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
-from app.schemas import AnimeCreate, AnimeGet, AnimeUpdate
+from app.schemas import AnimeCreate, AnimeGet, AnimeUpdate, AnimePatch
 from sqlalchemy.orm import Session
 from app import crud
 from app.enums import AnimeStatus
-from app.dependencies import get_db, get_current_user
+from app.dependencies import get_db, get_current_user, get_current_api_key
 
 router = APIRouter(
     prefix= "/anime",
@@ -135,19 +135,45 @@ def update_anime(id: int, anime: AnimeUpdate,
         )
     return to_update_anime
 
+@router.patch(
+    "/{id}",
+    status_code= status.HTTP_200_OK,
+    summary= "Update only desired field",
+    description= "Updates only requested field, instead of asking for whole"
+)
+
+def patch_anime(id: int, anime: AnimePatch,
+                db: Session = Depends(get_db),
+                user = Depends(get_current_user),
+                api_user = Depends(get_current_api_key)):
+    """Update an existing anime by replacing desired fields."""
+    if api_user.user_id == user.id:
+        to_update_anime = crud.patch_anime(db, anime, id)
+        if to_update_anime is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Anime not found"
+            )
+        return to_update_anime
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail= "Invalid API Key")
 
 @router.delete(
     "/{id}",
     status_code=status.HTTP_200_OK,
     summary="Delete an anime",
-    description="Deletes the anime with the specified ID from the database.",
-    dependencies=[Depends(get_current_user)]
+    description="Deletes the anime with the specified ID from the database."
 )
-def delete_anime(id: int, db: Session = Depends(get_db)):
+def delete_anime(id: int, db: Session = Depends(get_db),
+                 user = Depends(get_current_user),
+                 api_user = Depends(get_current_api_key)):
     """Delete the selected anime by id."""
-    anime = crud.delete_anime(db, id)
-    if anime is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Anime not found"
-        )
-    return {"message": "Anime deleted successfully"}
+    if api_user.user_id == user.id:
+
+        anime = crud.delete_anime(db, id)
+        if anime is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Anime not found"
+            )
+        return {"message": "Anime deleted successfully"}
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail= "Invalid API Key")

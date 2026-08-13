@@ -19,6 +19,15 @@ class AnimeCreate(AnimeBase):
 class AnimeUpdate(AnimeBase):
     pass
 
+class AnimePatch(BaseModel):
+    title: str | None = Field(None, min_length=2)
+    genre: str | None = Field(None, min_length=3)
+    episodes: int | None = Field(None, gt=0)
+    rating: float | None = Field(None, ge=0,le=10)
+    studio: str | None = Field(None, min_length=2)
+    release_year: int | None = Field(None, ge=1900, le= CURRENT_YEAR)
+    status: AnimeStatus | None = None
+
 class AnimeGet(AnimeBase):
     id: int
 
@@ -44,3 +53,10 @@ class UserResponse(UserBase):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+
+
+class ApiKeyResponse(BaseModel):
+    api_key: str
+
+class CreateApiKey(BaseModel):
+    name: str
