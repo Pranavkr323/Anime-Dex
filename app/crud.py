@@ -165,11 +165,6 @@ def get_user_by_email(db: Session, email:str):
         logger.exception("Failed to get user by email: %s", email)
         raise
 
-def get_user_by_email(db: Session, email: str):
-    statement = select(models.User).where(models.User.email == email)
-    return db.execute(statement).scalar_one_or_none()
-
-
 def verify_user(db: Session, user: schemas.UserLogin):
     requested_user = get_user_by_email(db, user.email)
     if requested_user is None:
