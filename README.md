@@ -1,79 +1,196 @@
 # 🎌 AnimeDex API
 
-A beginner-friendly **REST API built with FastAPI** to explore and manage anime data.
+A **FastAPI-based REST API for managing anime data**, evolved from a simple CRUD application into a structured backend with **SQLAlchemy, JWT authentication, API-key authorization, middleware, modular routing, and environment-based configuration**.
 
-AnimeDex started as a simple FastAPI project using in-memory data and gradually evolved into a backend application powered by **SQLAlchemy ORM** and **SQLite**. The project demonstrates how to design RESTful APIs, interact with databases, validate requests, and organize backend code using industry-standard practices.
+AnimeDex V4 focuses on practical backend engineering concepts such as REST API design, database management, authentication, authorization, validation, dependency injection, and separation of concerns.
 
 ---
 
-## 🚀 Features
+## 🚀 V4 Highlights
 
-### 📖 Read Operations
+AnimeDex V4 introduces a major backend upgrade over V3:
 
-* 📚 Get all anime
-* 🔍 Get anime by ID
-* 🎲 Get a random anime
-* 🏆 Get the top 10 highest-rated anime
-* 🏷️ Retrieve all available genres
-* 🎬 Retrieve all available studios
-* 📌 Retrieve all available anime statuses
+* 🔐 JWT-based user authentication
+* 🔑 API-key based authorization
+* 🔒 Secure password hashing with `pwdlib`
+* 🛡️ JWT + API-key ownership verification for sensitive operations
+* 🧩 Modular routing with FastAPI `APIRouter`
+* ⚡ Custom request-timing middleware
+* 🗄️ SQLAlchemy 2.0 ORM with SQLite
+* ✏️ Full and partial anime updates using `PUT` and `PATCH`
+* ⚙️ Environment-based configuration with Pydantic Settings
+* ✅ Structured validation and error handling
 
-### 🔎 Filtering
+---
 
-Filter anime using query parameters.
+## ✨ Features
 
-Examples:
+### 📚 Anime API
+
+* Get all anime
+* Get anime by ID
+* Get a random anime
+* Get top 10 highest-rated anime
+* Retrieve unique genres
+* Retrieve unique studios
+* Retrieve unique statuses
+* Filter anime by genre, studio, and status
+* Create anime
+* Fully update anime
+* Partially update anime
+* Delete anime
+
+### 🔐 Authentication
+
+* User registration
+* Secure password hashing
+* User login
+* JWT access-token generation
+* JWT validation
+* Bearer authentication
+* Protected endpoints
+
+### 🔑 API Keys
+
+* Generate API keys for authenticated users
+* Cryptographically secure key generation
+* Store API-key secrets as hashes
+* Validate API keys
+* Check API-key status
+* Verify API-key ownership
+
+### ⚡ Middleware
+
+Custom `TimerMiddleware` measures request processing time and adds the result to the response:
 
 ```http
-GET /anime?genre=Action
+X-Process-Time: 0.00421
 ```
+
+---
+
+## 🛡️ Authentication & Authorization
+
+AnimeDex V4 uses two layers of security for sensitive operations.
+
+### JWT Authentication
+
+After registering and logging in, the client receives a JWT access token.
 
 ```http
-GET /anime?studio=Madhouse
+Authorization: Bearer <access_token>
 ```
+
+The JWT identifies the authenticated user.
+
+### API-Key Authorization
+
+Authenticated users can generate an API key:
 
 ```http
-GET /anime?status=Completed
+POST /api_key/api_keys
 ```
+
+The API key is supplied using:
 
 ```http
-GET /anime?genre=Action&studio=MAPPA
+X-API-Key: <api_key>
 ```
 
-Multiple filters can be combined in a single request.
+The server validates the key, checks its status, and verifies that it belongs to the authenticated user.
 
-### ✏️ Write Operations
+### Protected Request Flow
 
-* ➕ Create a new anime
-* ♻️ Update an existing anime
-* 🗑️ Delete an anime
+```text
+Client Request
+      │
+      ▼
+JWT Authentication
+      │
+      ▼
+Identify User
+      │
+      ▼
+API Key Validation
+      │
+      ▼
+Verify Key Ownership
+      │
+      ▼
+Perform Operation
+```
 
-### 🗄️ Database Integration
+This demonstrates the distinction between:
 
-* Persistent storage using SQLite
+* **Authentication** — Who are you?
+* **Authorization** — Are you allowed to perform this operation?
+
+---
+
+## ✏️ PUT vs PATCH
+
+AnimeDex V4 supports both full and partial updates.
+
+### PUT
+
+Used for a full update of an anime resource.
+
+```http
+PUT /anime/{id}
+```
+
+### PATCH
+
+Used when only specific fields need to be changed.
+
+```http
+PATCH /anime/{id}
+```
+
+For example:
+
+```json
+{
+  "rating": 9.3,
+  "status": "Completed"
+}
+```
+
+This allows partial resource modification without resending the entire anime object.
+
+---
+
+## 🗄️ Database
+
+AnimeDex uses **SQLite** for persistent storage and **SQLAlchemy 2.0** as the ORM.
+
+Key database concepts used:
+
 * SQLAlchemy ORM
-* SQLAlchemy 2.0 style models using `Mapped` and `mapped_column`
-* Dependency-injected database sessions using FastAPI
-
-### ✅ Validation & Error Handling
-
-* Request validation using Pydantic
-* Response serialization using Pydantic response models
-* Enum validation for anime status
-* Field validation using Pydantic `Field`
-* Proper HTTP status codes
-* Error handling using `HTTPException`
+* `Mapped` and `mapped_column`
+* Database sessions
+* Dependency-injected sessions
+* CRUD abstraction
+* Model relationships
+* Enum-based fields
+* Persistent SQLite storage
 
 ---
 
 ## 🛠️ Tech Stack
 
-* Python 3
-* FastAPI
-* SQLAlchemy
-* Pydantic
-* SQLite
-* Uvicorn
+| Technology        | Purpose              |
+| ----------------- | -------------------- |
+| Python            | Programming language |
+| FastAPI           | REST API framework   |
+| SQLAlchemy 2.0    | ORM                  |
+| SQLite            | Database             |
+| Pydantic          | Validation & schemas |
+| Pydantic Settings | Configuration        |
+| pwdlib            | Password hashing     |
+| joserfc           | JWT handling         |
+| Starlette         | Middleware           |
+| Uvicorn           | ASGI server          |
 
 ---
 
@@ -83,14 +200,23 @@ Multiple filters can be combined in a single request.
 Anime-Dex/
 │
 ├── app/
-│   ├── crud.py          # Database operations
-│   ├── database.py      # Database configuration & session management
-│   ├── enums.py         # Enum definitions
-│   ├── main.py          # FastAPI application & API routes
-│   ├── models.py        # SQLAlchemy models
-│   ├── schemas.py       # Pydantic schemas
-│   └── __init__.py
+│   ├── routers/
+│   │   ├── anime.py          # Anime routes
+│   │   ├── user.py           # Authentication routes
+│   │   └── apikey_route.py   # API-key routes
+│   │
+│   ├── crud.py               # Database operations
+│   ├── database.py           # Database configuration
+│   ├── dependencies.py       # Shared dependencies & authentication
+│   ├── enums.py              # Enum definitions
+│   ├── main.py               # FastAPI application
+│   ├── middleware.py         # Request timing middleware
+│   ├── models.py             # SQLAlchemy models
+│   ├── schemas.py            # Pydantic schemas
+│   ├── config.py              # Application configuration
+│   └── utils.py               # Authentication utilities
 │
+├── seed.py
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
@@ -101,25 +227,68 @@ Anime-Dex/
 
 ## 📡 API Endpoints
 
-| Method | Endpoint          | Description                        |
-| ------ | ----------------- | ---------------------------------- |
-| GET    | `/`               | API home                           |
-| GET    | `/anime`          | Get all anime (supports filtering) |
-| GET    | `/anime/{id}`     | Get anime by ID                    |
-| GET    | `/anime/random`   | Get a random anime                 |
-| GET    | `/anime/top10`    | Get the top 10 highest-rated anime |
-| GET    | `/anime/genres`   | Get all unique genres              |
-| GET    | `/anime/studios`  | Get all unique studios             |
-| GET    | `/anime/statuses` | Get all unique anime statuses      |
-| POST   | `/anime`          | Create a new anime                 |
-| PUT    | `/anime/{id}`     | Update an existing anime           |
-| DELETE | `/anime/{id}`     | Delete an anime                    |
+### General
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| GET    | `/`      | API home    |
+
+### Anime
+
+| Method | Endpoint          | Auth          |
+| ------ | ----------------- | ------------- |
+| GET    | `/anime/`         | —             |
+| GET    | `/anime/{id}`     | —             |
+| GET    | `/anime/random`   | —             |
+| GET    | `/anime/top10`    | —             |
+| GET    | `/anime/genres`   | —             |
+| GET    | `/anime/studios`  | —             |
+| GET    | `/anime/statuses` | —             |
+| POST   | `/anime/`         | JWT           |
+| PUT    | `/anime/{id}`     | JWT           |
+| PATCH  | `/anime/{id}`     | JWT + API Key |
+| DELETE | `/anime/{id}`     | JWT + API Key |
+
+### Users
+
+| Method | Endpoint         | Description           |
+| ------ | ---------------- | --------------------- |
+| POST   | `/user/register` | Register a user       |
+| POST   | `/user/login`    | Login and receive JWT |
+
+### API Keys
+
+| Method | Endpoint            | Auth |
+| ------ | ------------------- | ---- |
+| POST   | `/api_key/api_keys` | JWT  |
 
 ---
 
-## 📝 Sample Request Body
+## 🔎 Filtering
 
-### Create / Update Anime
+Anime can be filtered using query parameters:
+
+```http
+GET /anime/?genre=Action
+```
+
+```http
+GET /anime/?studio=Madhouse
+```
+
+```http
+GET /anime/?status=Completed
+```
+
+Multiple filters can be combined:
+
+```http
+GET /anime/?genre=Action&studio=MAPPA&status=Completed
+```
+
+---
+
+## 📝 Example Anime Object
 
 ```json
 {
@@ -137,25 +306,20 @@ Anime-Dex/
 
 ## ⚙️ Installation
 
-### Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Pranavkr323/Anime-Dex.git
-```
-
-### Navigate to the project
-
-```bash
 cd Anime-Dex
 ```
 
-### Create a virtual environment
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-### Activate the virtual environment
+### 3. Activate the environment
 
 **Windows**
 
@@ -169,13 +333,19 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### Install dependencies
+### 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the development server
+### 5. Configure environment variables
+
+Create a `.env` file with the required application configuration.
+
+Do not commit secrets such as JWT signing keys to the repository.
+
+### 6. Run the server
 
 ```bash
 uvicorn app.main:app --reload
@@ -189,9 +359,28 @@ http://127.0.0.1:8000
 
 ---
 
-## 📖 Interactive API Documentation
+## 📖 API Documentation
 
-FastAPI automatically generates interactive API documentation.
+FastAPI automatically provides interactive documentation.
+
+---
+
+## 📸 API Preview
+
+### Swagger UI
+
+Interactive API documentation generated automatically by FastAPI.
+
+![AnimeDex Swagger UI](screenshot/swagger-ui_1.png)
+![AnimeDex Swagger UI](screenshot/swagger-ui_2.png)
+
+### JWT + API Key Authorization
+
+Protected endpoints require JWT authentication along with a valid API key where applicable.
+
+![JWT and API Key Verification](screenshot/jwt-api-key.png)
+
+---
 
 ### Swagger UI
 
@@ -205,57 +394,70 @@ http://127.0.0.1:8000/docs
 http://127.0.0.1:8000/redoc
 ```
 
----
+Swagger UI can be used to explore endpoints, inspect schemas, authenticate with JWT, provide API keys, and test protected operations.
 
-## 📸 Preview
-
-FastAPI automatically generates interactive API documentation.
-
-![Swagger UI](screenshot/swagger_ui.png)
 ---
 
 ## 🎯 What I Learned
 
-This project helped me learn:
+### Backend Development
 
-* FastAPI fundamentals
 * REST API design
-* CRUD operations
-* SQLAlchemy ORM
-* SQLite integration
-* SQLAlchemy 2.0 style models
-* Database session management
-* Dependency injection using `Depends()`
-* Pydantic schemas
-* Request & response validation
-* Enum validation
-* Query parameters
-* Dynamic query building
-* Filtering with SQLAlchemy
-* Sorting using `order_by()`
-* Limiting results using `limit()`
-* Retrieving distinct values using `distinct()`
-* Random database queries using SQL functions
+* FastAPI application structure
+* APIRouter
+* Dependency injection
+* Middleware
+* Request/response handling
 * HTTP status codes
-* Exception handling with `HTTPException`
-* Separation of API, schema, and database layers
-* Interactive API documentation with Swagger UI
+* Exception handling
+
+### Database
+
+* SQLAlchemy 2.0
+* ORM-based database operations
+* SQLite
+* Database sessions
+* CRUD abstraction
+* Model relationships
+
+### Authentication & Security
+
+* Password hashing
+* JWT authentication
+* Bearer authentication
+* Token validation
+* API-key generation
+* API-key hashing
+* API-key verification
+* Ownership-based authorization
+* Authentication vs authorization
+
+### API Design
+
+* Query parameter filtering
+* PUT vs PATCH
+* Pydantic schemas
+* Validation
+* Separation of concerns
+* Modular backend architecture
 
 ---
 
-## 🚧 Future Improvements
+## 🚧 Future Improvements — V5
 
-* [ ] Add PATCH endpoint for partial updates
-* [ ] Modularize routes using `APIRouter`
-* [ ] Database migrations using Alembic
+Potential areas for the next version:
+
+* [ ] Automated testing with Pytest
+* [ ] Database migrations with Alembic
 * [ ] PostgreSQL support
-* [ ] User authentication
-* [ ] Anime watchlists & favorites
-* [ ] Async SQLAlchemy
 * [ ] Pagination
-* [ ] Unit testing with Pytest
-* [ ] Docker support
-* [ ] Deploy to Render or Railway
+* [ ] Async SQLAlchemy
+* [ ] Dockerization
+* [ ] CI/CD
+* [ ] API rate limiting
+* [ ] Logging & monitoring
+* [ ] Production deployment
+* [ ] Anime watchlists & favorites
 
 ---
 
@@ -269,9 +471,9 @@ This project is licensed under the MIT License.
 
 **Pranav Kumar**
 
-Backend Developer • Python Enthusiast • FastAPI Learner
+Backend Developer • Python • FastAPI • SQLAlchemy
 
 * GitHub: https://github.com/Pranavkr323
 * LinkedIn: https://www.linkedin.com/in/pranavkr323/
 
-If you found this project helpful or interesting, consider giving it a ⭐.
+If you found AnimeDex useful or interesting, consider giving the repository a ⭐.
