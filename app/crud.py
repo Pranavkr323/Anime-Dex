@@ -3,6 +3,14 @@ from app import models, schemas
 from sqlalchemy import select, func
 from app.enums import AnimeStatus
 from app.utils import hash_password, verify_password
+import logging
+
+logger = logging.getLogger(__name__)
+from app.models import ApiKey
+from datetime import datetime, timezone
+from app.enums import APIKeyStatus
+from fastapi import HTTPException, status
+
 
 # get all Animes
 def get_anime(
@@ -86,10 +94,32 @@ def create_anime(db: Session, anime: schemas.AnimeCreate):
         raise
 
 def update_anime(db: Session, anime: schemas.AnimeUpdate, anime_id: int):
+    try:
+        requested_anime = get_anime_by_id(db, anime_id)
+        if requested_anime is None:
+            return None
+        update_data = anime.model_dump()
+        for key, value in update_data.items():
+            setattr(requested_anime, key, value)
+        db.commit()
+        db.refresh(requested_anime)
+        return requested_anime
+    except Exception:
+        db.rollback()
+        logger.exception("Failed to update anime with id %s", anime_id)
+        raise
+
+
+def patch_anime(db: Session, anime: schemas.AnimePatch, anime_id: int):
     requested_anime = get_anime_by_id(db, anime_id)
     if requested_anime is None:
         return None
-    update_data = anime.model_dump()
+    update_data = anime.model_dump(exclude_unset= True)
+    if not update_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="At least one field is required for update"
+        )
     for key, value in update_data.items():
         setattr(requested_anime, key, value)
     db.commit()
@@ -112,18 +142,30 @@ def delete_anime(db: Session, anime_id: int):
 
 
 def create_user(db: Session, user: schemas.UserRegister):
-    new_user = models.User(
-        username = user.username,
-        email = user.email,
-        hashed_password = hash_password(user.password),
-
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    try:
+        new_user = models.User(
+            username = user.username,
+            email = user.email,
+            hashed_password = hash_password(user.password),
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except Exception:
+        db.rollback()
+        logger.exception("Failed to create user with email: %s", user.email)
+        raise
 
 def get_user_by_email(db: Session, email:str):
+    try:
+        statement = select(models.User).where(models.User.email == email)
+        return db.execute(statement).scalar_one_or_none()
+    except Exception:
+        logger.exception("Failed to get user by email: %s", email)
+        raise
+
+def get_user_by_email(db: Session, email: str):
     statement = select(models.User).where(models.User.email == email)
     return db.execute(statement).scalar_one_or_none()
 
