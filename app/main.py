@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from fastapi import FastAPI
-from app.database import engine, Base
 from app.routers import anime, user, apikey_route
 from app.middleware import TimerMiddleware
 import logging
