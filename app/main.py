@@ -2,12 +2,18 @@ from fastapi import FastAPI
 from app.database import engine, Base
 from app.routers import anime, user, apikey_route
 from app.middleware import TimerMiddleware
-
+import logging
 
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    style="%",
+    datefmt="%Y-%m-%d %H:%M",
+)
 
 @app.get(
     "/",
